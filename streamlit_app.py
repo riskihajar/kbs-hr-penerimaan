@@ -29,6 +29,12 @@ def rule_based_accept(row):
     else:
         return 1
 
+st.set_page_config(
+    page_title="KBS-HR | Prediksi Penerimaan",
+    page_icon="📊",
+    layout="wide"
+)
+
 st.title("📊 KBS-HR: Prediksi Penerimaan Karyawan")
 uploaded_file = st.file_uploader("Upload file CSV", type="csv")
 
