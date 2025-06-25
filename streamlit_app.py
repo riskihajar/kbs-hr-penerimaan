@@ -18,14 +18,35 @@ categorical_cols = [
 ]
 
 def rule_based_accept(row):
+    # Jika usia sangat muda dan performa rendah → tolak
     if row["AgeAtStart"] < 25 and row.get("Performance Score_Low", 0) == 1:
         return 0
+
+    # Jika masa kerja cukup lama dan performa tinggi → terima
     elif row["TenureMonths"] > 24 and row.get("Performance Score_High", 0) == 1:
         return 1
-    elif row.get("EmployeeClassificationType_Intern", 0) == 1:
+
+    # Jika status pernikahan belum menikah & performa tidak tinggi → pertimbangkan tolak
+    elif row.get("MaritalDesc_Single", 0) == 1 and row.get("Performance Score_High", 0) == 0:
         return 0
-    elif row.get("Performance Score_High", 0) == 1:
+
+    # Jika unit bisnis adalah 'Corporate' dan skor performa tinggi → terima
+    elif row.get("BusinessUnit_Corporate", 0) == 1 and row.get("Performance Score_High", 0) == 1:
         return 1
+
+    # Jika employee type adalah 'Part-Time' dan skor performa tidak tinggi → tolak
+    elif row.get("EmployeeType_Part-Time", 0) == 1 and row.get("Performance Score_High", 0) == 0:
+        return 0
+
+    # Jika usia > 40 dan masa kerja > 36 bulan → terima (pengalaman tinggi)
+    elif row["AgeAtStart"] > 40 and row["TenureMonths"] > 36:
+        return 1
+
+    # Jika ras adalah 'White' dan performa tinggi → terima (asumsi dari data historis)
+    elif row.get("RaceDesc_White", 0) == 1 and row.get("Performance Score_High", 0) == 1:
+        return 1
+
+    # Default → terima
     else:
         return 1
 
