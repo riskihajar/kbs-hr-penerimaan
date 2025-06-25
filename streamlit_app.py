@@ -44,8 +44,10 @@ if uploaded_file:
     st.dataframe(raw_df)
 
     df_input = raw_df[features].copy()
-    df_encoded = pd.get_dummies(df_input, columns=categorical_cols)
+    df_onehot = pd.get_dummies(df_input, columns=categorical_cols)
 
+    # Siapkan salinan untuk model (sesuai kolom training)
+    df_encoded = df_onehot.copy()
     for col in rf_model.feature_names_in_:
         if col not in df_encoded.columns:
             df_encoded[col] = 0
@@ -55,7 +57,7 @@ if uploaded_file:
     rf_conf = rf_model.predict_proba(df_encoded)[:, 1]
     ann_pred = ann_model.predict(df_encoded)
     ann_conf = ann_model.predict_proba(df_encoded)[:, 1]
-    rule_pred = df_encoded.apply(rule_based_accept, axis=1)
+    rule_pred = df_onehot.apply(rule_based_accept, axis=1)
 
     hasil_df = pd.DataFrame({
         "RF_Pred": rf_pred,
